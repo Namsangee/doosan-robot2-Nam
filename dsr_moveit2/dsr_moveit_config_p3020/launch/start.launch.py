@@ -52,6 +52,23 @@ def generate_robot_description_action(context, *args, **kwargs):
         )
         adjusted_yaml = adjust_dsr_controller_yaml(original_yaml, active_joints, passive_joints)
         print(f"[INFO] Using dynamically generated controller.yaml: {adjusted_yaml}")
+
+        # 생성된 파일 내용 로깅 (존재 확인 + 예외 처리)
+        try:
+            if adjusted_yaml and os.path.exists(adjusted_yaml):
+                with open(adjusted_yaml, "r", encoding="utf-8") as f:
+                    yaml_text = f.read()
+                print(
+                    "\n" +
+                    "="*24 + " [DYNAMIC controller.yaml] " + "="*24 + "\n" +
+                    yaml_text +
+                    "\n" +
+                    "="*24 + " [/DYNAMIC controller.yaml] " + "="*23 + "\n"
+                )
+            else:
+                print(f"[WARN] Dynamic controller YAML not found: {adjusted_yaml}")
+        except Exception as e:
+            print(f"[WARN] Failed to read dynamic controller YAML: {e}")
     else:
         static_yaml = os.path.join(
             get_package_share_directory("dsr_controller2"),
@@ -73,6 +90,7 @@ def generate_robot_description_action(context, *args, **kwargs):
         SetLaunchConfiguration('robot_description', urdf_xml),
         SetLaunchConfiguration('controller_yaml', adjusted_yaml),
     ]
+
 
 def rviz_and_move_group_fn(context):
     model_value = LaunchConfiguration('model').perform(context)
