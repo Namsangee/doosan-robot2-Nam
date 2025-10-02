@@ -20,6 +20,11 @@
 
       dsr_position_controller:
         type: forward_command_controller/ForwardCommandController
+        
+      tcp_force_broadcaster:
+        type: tcp_force_broadcaster/TcpForceBroadcaster
+        ros__parameters:
+          frame_id: "tool0"     # WrenchStamped 메시지의 frame_id
 
   dsr_controller2:
     ros__parameters:

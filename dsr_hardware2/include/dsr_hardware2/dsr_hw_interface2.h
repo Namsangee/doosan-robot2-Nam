@@ -81,6 +81,7 @@ protected:
     std::vector<double> ft_states_;
     std::vector<double> ft_command_;
     std::vector<std::vector<float>> init_joint_position_command;
+    std::array<double, 6> tcp_force_;    // [modified]
 
     std::unordered_map<std::string, std::vector<std::string>> joint_interfaces = {
         {"position", {}}, {"velocity", {}}, {"effort", {}}};

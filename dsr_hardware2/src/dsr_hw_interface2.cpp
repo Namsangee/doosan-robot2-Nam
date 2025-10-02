@@ -294,6 +294,10 @@ std::vector<hardware_interface::StateInterface> DRHWInterface::export_state_inte
 	for(size_t i=0; i<joint_interfaces["effort"].size(); i++) {
 		state_interfaces.emplace_back(joint_interfaces["effort"][i], "effort", &joint_effort_[i]);
 	}
+	// [modified]
+	for (size_t i = 0; i < 6; i++) {
+    state_interfaces.emplace_back("tcp_force", "force_" + std::to_string(i), &tcp_force_[i]);
+	}	
   return state_interfaces;
 }
 
@@ -322,6 +326,7 @@ return_type DRHWInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Dur
 		for(int i=0;i<6;i++) {
 			joint_position_[i] = static_cast<float>(data->actual_joint_position[i] * (M_PI / 180.0f));
 			joint_velocities_[i] = static_cast<float>(data->actual_joint_velocity[i] * (M_PI / 180.0f));
+        	tcp_force_[i] = static_cast<double>(data->external_tcp_force[i]);
 		}
 	}else if(mode == "virtual") {
 		LPROBOT_POSE pose = Drfl.GetCurrentPose();

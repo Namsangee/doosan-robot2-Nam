@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tcp_force_broadcaster</name>
+  <version>0.0.1</version>
+  <description>Broadcast TCP force/torque from Doosan read_data_rt into a topic</description>
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>BSD-3-Clause</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>controller_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>geometry_msgs</depend>
+  <depend>hardware_interface</depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

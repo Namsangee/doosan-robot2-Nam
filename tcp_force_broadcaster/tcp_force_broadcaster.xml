@@ -1,0 +1,7 @@
+<library path="tcp_force_broadcaster">
+  <class name="tcp_force_broadcaster/TcpForceBroadcaster"
+         type="tcp_force_broadcaster::TcpForceBroadcaster"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>Publishes TCP force/torque as WrenchStamped</description>
+  </class>
+</library>
