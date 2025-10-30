@@ -17,6 +17,9 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   
+  "msg/TargetPose.msg"
+  "msg/TargetJoint.msg"
+
   "msg/LogAlarm.msg"
   "msg/ModbusState.msg"
   "msg/RobotError.msg"
