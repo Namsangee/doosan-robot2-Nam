@@ -77,6 +77,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AlterMotion.srv"
   "srv/DisableAlterMotion.srv"
   "srv/SetSingularityHandling.srv"
+  "srv/SetSingularityHandlingForce.srv"
 
   "srv/GetControlMode.srv"              
   "srv/GetControlSpace.srv"             

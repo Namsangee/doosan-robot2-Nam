@@ -104,6 +104,8 @@
 #include "dsr_msgs2/srv/alter_motion.hpp"
 #include "dsr_msgs2/srv/disable_alter_motion.hpp"
 #include "dsr_msgs2/srv/set_singularity_handling.hpp"
+// add
+#include "dsr_msgs2/srv/set_singularity_handling_force.hpp"
 
 //----- auxiliary_control
 #include "dsr_msgs2/srv/get_control_mode.hpp"          
@@ -587,7 +589,9 @@ protected:
   rclcpp::Service<dsr_msgs2::srv::AlterMotion>::SharedPtr             m_nh_srv_alter_motion;
   rclcpp::Service<dsr_msgs2::srv::DisableAlterMotion>::SharedPtr      m_nh_srv_disable_alter_motion;
   rclcpp::Service<dsr_msgs2::srv::SetSingularityHandling>::SharedPtr  m_nh_srv_set_singularity_handling;
-  
+  // add
+  rclcpp::Service<dsr_msgs2::srv::SetSingularityHandlingForce>::SharedPtr  m_nh_srv_set_singularity_handling_force;
+
   rclcpp::Service<dsr_msgs2::srv::GetControlMode>::SharedPtr               m_nh_srv_get_control_mode;          
   rclcpp::Service<dsr_msgs2::srv::GetControlSpace>::SharedPtr              m_nh_srv_get_control_space;         
   rclcpp::Service<dsr_msgs2::srv::GetCurrentPosj>::SharedPtr               m_nh_srv_get_current_posj;          

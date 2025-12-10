@@ -1,24 +1,46 @@
+/*    ========================================================================
+    =                   Doosan Robot Framework Library                        =
+    =                   Copyright (c) Doosan Robotics.                        =   
+    =_______________________________________________________________________  =
+    = Title             : Doosan Robot Framwork Library                       =
+    = Author            : Lee Jeong-Woo<jeongwoo1.lee@doosan.com>             =
+    = Maintainer        : Minsoo Song<minsoo.song@doosan.com>                 =
+    =                     Minju Lee<minju3.lee@doosan.com>                    =
+    = Description       : -                                                   =
+    ======================================================================== */
+
 /*********************************************************************
- * 
- * dsr_common2
- * Author: Lee Jeong-Woo<jeongwoo1.lee@doosan.com>
- * Maintainer: Minsoo Song<minsoo.song@doosan.com>
- *             Minju Lee<minju3.lee@doosan.com> 
- * 
- * Copyright (c) 2025 Doosan Robotics
+ * Software License Agreement (BSD License)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Copyright (c) 2024, Doosan Robotics
+ *  All rights reserved.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the Georgia Institute of Technology nor the names of
+ *     its contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
  *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
 
@@ -469,6 +491,8 @@ namespace DRAFramework
         DRFL_API bool _disable_alter_motion(LPROBOTCONTROL pCtrl);
         DRFL_API bool _alter_motion(LPROBOTCONTROL pCtrl, float fTargetPos[NUM_TASK]);
         DRFL_API bool _set_singularity_handling(LPROBOTCONTROL pCtrl, SINGULARITY_AVOIDANCE eMode);
+        //Add
+        DRFL_API bool _set_singular_handling_force(LPROBOTCONTROL pCtrl, SINGULARITY_FORCE_HANDLING eMode);
         DRFL_API bool _config_program_watch_variable(LPROBOTCONTROL pCtrl, VARIABLE_TYPE eDivision, DATA_TYPE eType, const char* szName, const char* szData);
         DRFL_API bool _save_sub_program(LPROBOTCONTROL pCtrl, int iTargetType, const char* szFileName, const char* lpszTextString);
         DRFL_API bool _setup_monitoring_version(LPROBOTCONTROL pCtrl, int iVersion);
@@ -533,7 +557,8 @@ namespace DRAFramework
         DRFL_API bool _set_state_led_off(LPROBOTCONTROL _rbtCtrl);
         DRFL_API bool _set_state_led_color(LPROBOTCONTROL _rbtCtrl, int red, int green, int blue);
         DRFL_API unsigned char _get_state_led_rule(LPROBOTCONTROL _rbtCtrl);
-
+        //Link Info
+        DRFL_API bool _get_robot_link_info(LPROBOTCONTROL pCtrl,LPROBOT_LINK_INFO pOut,int timeout_ms);
 #ifdef __cplusplus
     };
 #endif
@@ -957,7 +982,9 @@ namespace DRAFramework
         bool enable_alter_motion(int iCycleTime, PATH_MODE ePathMode, COORDINATE_SYSTEM eTargetRef, float fLimitDpos[2], float fLimitDposPer[2]) { return _enable_alter_motion(_rbtCtrl, iCycleTime, ePathMode, eTargetRef, fLimitDpos, fLimitDposPer); };
         bool disable_alter_motion() { return _disable_alter_motion(_rbtCtrl); };
         bool alter_motion(float fTargetPos[NUM_TASK]) { return _alter_motion(_rbtCtrl, fTargetPos); };
-        bool set_singularity_handling(SINGULARITY_AVOIDANCE eMode) { return _set_singularity_handling(_rbtCtrl, eMode); };
+        bool set_singularity_handling(SINGULARITY_AVOIDANCE eMode) { return _set_singularity_handling(_rbtCtrl, eMode); }; 
+        // Add set_singular handling_force
+        bool set_singular_handling_force(SINGULARITY_FORCE_HANDLING eMode) { return _set_singular_handling_force(_rbtCtrl, eMode); };
         bool config_program_watch_variable(VARIABLE_TYPE eDivision, DATA_TYPE eType, string strName, string strData) { return _config_program_watch_variable(_rbtCtrl, eDivision, eType, strName.c_str(), strData.c_str()); };
         bool save_sub_program(int iTargetType, string strFileName, string strDrlProgram) { return _save_sub_program(_rbtCtrl, iTargetType, strFileName.c_str(), strDrlProgram.c_str()); };
         
@@ -972,6 +999,8 @@ namespace DRAFramework
         bool set_state_led_off() {return _set_state_led_off(_rbtCtrl);};
         bool set_state_led_color(int red, int green, int blue) {return _set_state_led_color(_rbtCtrl, red, green, blue);};
         unsigned char get_state_led_rule() {return _get_state_led_rule(_rbtCtrl);};
+        // Link Info
+        bool get_robot_link_info(ROBOT_LINK_INFO& out, int timeout_ms = 300) {return _get_robot_link_info(_rbtCtrl, &out, timeout_ms); }; 
 
         ////////////////////////////////////////////////////////////////////////////
         //  welding                                                //
@@ -1029,7 +1058,6 @@ namespace DRAFramework
         bool app_weld_adj_motion_offset(float fOffsetY, float fOffsetZ) { return _app_weld_adj_motion_offset(_rbtCtrl, fOffsetY, fOffsetZ); };
         //brief(294) :set_welding_cockpit_setting_time_setting
         void set_welding_cockpit_setting_time_setting(int time) { return _set_welding_cockpit_setting_time_setting(_rbtCtrl, time); };
-
 #endif
 
 protected:
@@ -1037,3 +1065,4 @@ protected:
     };
 #endif
 }
+
