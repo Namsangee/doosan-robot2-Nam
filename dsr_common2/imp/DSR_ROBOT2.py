@@ -96,7 +96,8 @@ _ros2_enable_alter_motion        = g_node.create_client(EnableAlterMotion,      
 _ros2_alter_motion               = g_node.create_client(AlterMotion,            _srv_name_prefix +"motion/alter_motion")
 _ros2_disable_alter_motion       = g_node.create_client(DisableAlterMotion,     _srv_name_prefix +"motion/disable_alter_motion")
 _ros2_set_singularity_handling    = g_node.create_client(SetSingularityHandling,_srv_name_prefix +"motion/set_singularity_handling")
-
+# add
+_ros2_set_singularity_handling_force    = g_node.create_client(SetSingularityHandlingForce,_srv_name_prefix +"motion/set_singularity_handling_force")
 
 # Auxiliary Control Operations
 _ros2_get_control_mode               = g_node.create_client(GetControlMode,     _srv_name_prefix +"aux_control/get_control_mode")
@@ -342,6 +343,10 @@ DR_VECTOR_V1_LEN  = 3
 DR_AVOID     = 0
 DR_TASK_STOP = 1
 DR_VAR_VEL   = 2        #add 2019/04/01 
+
+# set_singular_handling_force mode //add
+DR_SINGULARITY_ERROR  = 0   # 특이점 진입 시 에러 발생 (기본값)
+DR_SINGULARITY_IGNORE = 1   # 특이점 진입 시 에러 무시
 
 # object container type
 DR_FIFO      = 0
@@ -3956,6 +3961,45 @@ def set_singularity_handling(mode = DR_AVOID):
     ret = set_singular_handling(mode)
     return ret
 
+# add
+def set_singular_handling_force(mode=DR_SINGULARITY_ERROR):
+    if type(mode) != int:
+        raise DR_Error(DR_ERROR_TYPE, "Invalid type : mode")
+
+    if mode < DR_SINGULARITY_ERROR or mode > DR_SINGULARITY_IGNORE:
+        raise DR_Error(
+            DR_ERROR_VALUE,
+            "Invalid value : mode({0})".format(mode)
+        )
+
+    if __ROS2__:
+        req = SetSingularityHandlingForce.Request()
+        req.mode = mode
+
+        future = _ros2_set_singularity_handling_force.call_async(req)
+        rclpy.spin_until_future_complete(g_node, future)
+
+        try:
+            result = future.result()
+        except Exception as e:
+            g_node.get_logger().info(
+                'set_singular_handling_force Service call failed %r' % (e,)
+            )
+            ret = -1
+        else:
+            if result is None:
+                ret = -1
+            else:
+                ret = 0 if (result.success == True) else -1     
+
+    return ret
+
+# add
+def set_singularity_handling_force(mode=DR_SINGULARITY_ERROR):
+    ret = set_singular_handling_force(mode)
+    return ret
+
+
 def jog(jog_axis, ref=0, speed=0):
     if type(jog_axis) != int and type(jog_axis) != float:
         raise DR_Error(DR_ERROR_TYPE, "Invalid type : jog_axis")
@@ -6585,6 +6629,8 @@ class CDsrRobot:
         self._ros2_alter_motion               = g_node.create_client(AlterMotion,            self._srv_name_prefix +"/motion/alter_motion") ; self.req_AlterMotion = AlterMotion.Request()
         self._ros2_disable_alter_motion       = g_node.create_client(DisableAlterMotion,     self._srv_name_prefix +"/motion/disable_alter_motion") ; self.req_DisableAlterMotion = DisableAlterMotion.Request()
         self._ros2_set_singularity_handling   = g_node.create_client(SetSingularityHandling, self._srv_name_prefix +"/motion/set_singularity_handling") ; self.req_SetSingularityHandling = SetSingularityHandling.Request()
+        # add
+        self._ros2_set_singularity_handling_force   = g_node.create_client(SetSingularityHandlingForce, self._srv_name_prefix +"/motion/set_singularity_handling_force") ; self.req_SetSingularityHandlingForce = SetSingularityHandlingForce.Request()
 
 
         # Auxiliary Control Operations
@@ -9022,6 +9068,39 @@ class CDsrRobot:
 
     def set_singularity_handling(self, mode = DR_AVOID):
         ret = set_singular_handling(mode)
+        return ret
+
+    # add
+    def set_singular_handling_force(self, mode=DR_SINGULARITY_ERROR):
+        if type(mode) != int:
+            raise DR_Error(DR_ERROR_TYPE, "Invalid type : mode")
+
+        if mode < DR_SINGULARITY_ERROR or mode > DR_SINGULARITY_IGNORE:
+            raise DR_Error(DR_ERROR_VALUE,"Invalid value : mode({0})".format(mode))
+
+        ret = -1
+
+        if __ROS2__:
+            req = self.req_SetSingularityHandlingForce
+            req.mode = mode
+
+            future = self._ros2_set_singular_handling_force.call_async(req)
+            rclpy.spin_until_future_complete(g_node, future)
+
+            try:
+                result = future.result()
+            except Exception as e:
+                g_node.get_logger().info('set_singular_handling_force Service call failed %r' % (e,))
+                ret = -1
+            else:
+                if result == None:
+                    ret = -1
+                else:
+                    ret = 0 if (result.success == True) else -1
+        return ret
+
+    def set_singularity_handling_force(self, mode=DR_SINGULARITY_ERROR):
+        ret = self.set_singular_handling_force(mode)
         return ret
 
     def jog(self, jog_axis, ref=0, speed=0):

@@ -1,0 +1,10 @@
+#____________________________________________________________________________________________
+# set_singularity_handling_force
+# 
+#____________________________________________________________________________________________
+
+int8       mode         #   DR_SINGULARITY_ERROR  = 0 : Raise error on singularity (default)
+                        #   DR_SINGULARITY_IGNORE = 1 : Ignore singularity error
+
+---
+bool success
